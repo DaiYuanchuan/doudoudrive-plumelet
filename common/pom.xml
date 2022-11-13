@@ -36,46 +36,28 @@
     <!-- 项目依赖 -->
     <dependencies>
 
-        <!-- spring boot 依赖包 -->
+        <!-- loadbalancer -->
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-            <!-- 移除Tomcat依赖 -->
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-starter-tomcat</artifactId>
-                </exclusion>
-            </exclusions>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-loadbalancer</artifactId>
         </dependency>
-        <!-- 引入undertow -->
+
+        <!-- feign服务 -->
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-undertow</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.jboss.xnio</groupId>
-                    <artifactId>xnio-api</artifactId>
-                </exclusion>
-            </exclusions>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
+
+        <!-- nacos -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.jboss.xnio</groupId>
-            <artifactId>xnio-api</artifactId>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-aop</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-common</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-validation</artifactId>
-        </dependency>
-        <!-- spring boot 依赖包 -->
+        <!-- nacos -->
 
         <!-- elasticsearch -->
         <dependency>

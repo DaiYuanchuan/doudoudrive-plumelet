@@ -1,9 +1,12 @@
 package com.doudoudrive;
 
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 /**
  * <p>worker启动器</p>
@@ -11,8 +14,11 @@ import org.springframework.scheduling.annotation.EnableAsync;
  *
  * @author Dan
  **/
-@EnableAsync
+@Slf4j
+@EnableWebMvc
+@EnableDiscoveryClient
 @SpringBootApplication
+@EnableTransactionManagement
 public class WorkerApplication {
 
     @SneakyThrows

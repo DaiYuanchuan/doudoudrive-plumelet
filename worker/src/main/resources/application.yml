@@ -5,22 +5,6 @@ server:
       # Undertow 日志存放目录
       dir: logs/worker
 spring:
-  # es 配置
-  elasticsearch:
-    # es集群地址
-    uris:
-      - http://192.168.31.200:9201
-      - http://192.168.31.200:9202
-      - http://192.168.31.200:9203
-      - http://192.168.31.200:9204
-    # 与Elasticsearch通信时使用的连接超时时间
-    connection-timeout: 10
-    socket-timeout: 60000
-    #username: elastic
-    #password: 13770169540a+
   application:
     name: workerServer
 
-udp:
-  # 定义UDP服务端口
-  port: 8001

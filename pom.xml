@@ -82,6 +82,14 @@
         <commons-lang3.version>3.12.0</commons-lang3.version>
         <commons-net.version>3.8.0</commons-net.version>
         <httpmime.version>4.5.13</httpmime.version>
+        <!-- snakeyaml依赖包版本 -->
+        <snakeyaml.version>1.33</snakeyaml.version>
+        <!-- spring cloud 版本号 -->
+        <spring-cloud.version>2021.0.4</spring-cloud.version>
+        <spring-cloud-alibaba.version>2021.0.4.0</spring-cloud-alibaba.version>
+        <spring-integration-ip.version>5.5.15</spring-integration-ip.version>
+        <!-- nacos客户端依赖包版本 -->
+        <nacos-client.version>2.1.1</nacos-client.version>
     </properties>
 
     <!-- spring maven 远程仓库 start -->
@@ -101,8 +109,109 @@
     </repositories>
     <!-- spring maven 远程仓库 end -->
 
+    <!-- 设置spring boot的依赖版本 start -->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.6.11</version>
+    </parent>
+    <!-- 设置spring boot的依赖版本 end -->
+
     <!-- 项目公共依赖 -->
     <dependencies>
+
+        <!-- spring boot 依赖包 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.yaml</groupId>
+                    <artifactId>snakeyaml</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>${snakeyaml.version}</version>
+        </dependency>
+        <!-- 优先加载bootstrap.yml -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-bootstrap</artifactId>
+            <version>3.1.5</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.bouncycastle</groupId>
+                    <artifactId>bcprov-jdk15on</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!-- spring web启动器 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <!-- 移除Tomcat依赖 -->
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-tomcat</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!-- 引入undertow -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-undertow</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.jboss.xnio</groupId>
+                    <artifactId>xnio-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.xnio</groupId>
+            <artifactId>xnio-api</artifactId>
+            <version>${xnio-api.version}</version>
+        </dependency>
+        <!-- spring boot yml文件元数据映射配置 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+            <version>2.6.11</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>io.netty</groupId>
+                    <artifactId>netty-common</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-common</artifactId>
+            <version>4.1.84.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+        <!-- spring boot 依赖包 -->
 
         <!-- lombok -->
         <dependency>
@@ -120,74 +229,46 @@
     <dependencyManagement>
         <dependencies>
 
-            <!-- spring boot 依赖包 -->
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-parent</artifactId>
-                <version>${springboot.version}</version>
-            </dependency>
-            <!-- spring web启动器 -->
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-web</artifactId>
-                <version>${springboot.version}</version>
-                <!-- 移除Tomcat依赖 -->
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.springframework.boot</groupId>
-                        <artifactId>spring-boot-starter-tomcat</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <!-- 引入undertow -->
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-undertow</artifactId>
-                <version>${springboot.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.jboss.xnio</groupId>
-                        <artifactId>xnio-api</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.jboss.xnio</groupId>
-                <artifactId>xnio-api</artifactId>
-                <version>${xnio-api.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-aop</artifactId>
-                <version>${springboot.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-common</artifactId>
-                <version>${netty4.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-all</artifactId>
-                <version>${netty4.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-validation</artifactId>
-                <version>${springboot.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-integration</artifactId>
-                <version>${springboot.version}</version>
-            </dependency>
+            <!-- 针对基于TCP/UDP协议的数据传输功能实现 -->
             <dependency>
                 <groupId>org.springframework.integration</groupId>
                 <artifactId>spring-integration-ip</artifactId>
-                <version>5.5.15</version>
+                <version>${spring-integration-ip.version}</version>
             </dependency>
-            <!-- spring boot 依赖包 -->
 
+            <!-- 分布式依赖包 -->
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-starter-openfeign</artifactId>
+                <version>3.1.4</version>
+            </dependency>
+            <!-- spring cloud + spring-cloud-alibaba -->
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba.cloud</groupId>
+                <artifactId>spring-cloud-alibaba-dependencies</artifactId>
+                <version>${spring-cloud-alibaba.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.alibaba.nacos</groupId>
+                        <artifactId>nacos-client</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <!-- 添加nacos客户端依赖 -->
+            <dependency>
+                <groupId>com.alibaba.nacos</groupId>
+                <artifactId>nacos-client</artifactId>
+                <version>${nacos-client.version}</version>
+            </dependency>
             <!-- elasticsearch -->
             <dependency>
                 <groupId>org.springframework.data</groupId>
@@ -200,6 +281,7 @@
                 <artifactId>spring-data-commons</artifactId>
                 <version>${springdata.commons.version}</version>
             </dependency>
+            <!-- 分布式依赖包 -->
 
             <!-- 工具包系列 -->
             <!-- fastjson -->

@@ -6,9 +6,9 @@ debug：当此属性设置为true时，将打印出logback内部日志信息，�
 -->
 <configuration scan="false" scanPeriod="60 seconds" debug="false">
 
-    <!--定义日志文件的存储地址 在SpringBoot的 application 中获取 logback.file 值 -->
-    <springProperty scope="context" name="LOG_HOME" source="server.undertow.accesslog.dir"/>
-    <springProperty scope="context" name="appName" source="spring.application.name"/>
+    <!-- 定义日志的根目录 -->
+    <property name="LOG_HOME" value="logs/worker" />
+    <property name="appName" value="workerServer" />
 
     <!-- 控制台日志打印格式 -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
