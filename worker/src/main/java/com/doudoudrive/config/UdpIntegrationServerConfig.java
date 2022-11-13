@@ -139,8 +139,6 @@ public class UdpIntegrationServerConfig implements CommandLineRunner, Closeable 
             byte[] body = new byte[buf.readableBytes()];
             // 将数据读取到byte数组中
             buf.readBytes(body);
-            // 接收到udp消息
-            log.error("Received udp message..............................................................");
             // 批量保存系统日志消息
             sysLogManager.saveBatch(body);
         }
