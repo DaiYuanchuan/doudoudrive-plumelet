@@ -27,7 +27,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(chain = true)
-@Setting(replicas = 0, indexStoreType = ConstantConfig.StoreType.NIO_FS)
+@Setting(shards = 2, replicas = 0, indexStoreType = ConstantConfig.StoreType.NIO_FS)
 @Document(indexName = "#{@indexNameGenerator.sysLogbackIndex()}")
 public class SysLogMessage implements Serializable {
 

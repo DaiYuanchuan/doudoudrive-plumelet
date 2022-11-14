@@ -8,6 +8,7 @@ import com.doudoudrive.model.TracerLogbackModel;
 import com.doudoudrive.util.lang.CollectionUtil;
 import com.doudoudrive.util.lang.CompressionUtil;
 import com.doudoudrive.util.lang.ProtostuffUtil;
+import com.doudoudrive.util.thread.ExecutorBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -15,7 +16,11 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.concurrent.*;
+import java.io.Closeable;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * <p>系统日志消息服务的通用业务处理层接口实现</p>
@@ -26,34 +31,40 @@ import java.util.concurrent.*;
 @Slf4j
 @Scope("singleton")
 @Service("sysLogManager")
-public class SysLogManagerImpl implements SysLogManager, CommandLineRunner {
+public class SysLogManagerImpl implements SysLogManager, CommandLineRunner, Closeable {
 
-    /**
-     * 线程池中要保留的线程数
-     */
-    private static final Integer CORE_POOL_SIZE = 1;
     /**
      * 每次上传、获取的日志数量
      */
     private static final Long ELEMENTS_PER_LOG = 500L;
+
     /**
      * 序列化工具
      */
     private static final ProtostuffUtil<TracerLogbackModel> SERIALIZER = new ProtostuffUtil<>();
+
     /**
      * 日志队列容量
      */
     private static final Integer LOGGER_QUEUE_CAPACITY = 100000;
+
     /**
      * 日志集中营，最多积压10万条
      */
     private static final BlockingQueue<TracerLogbackModel> TRACER_LOGBACK_QUEUE = new LinkedBlockingQueue<>(LOGGER_QUEUE_CAPACITY);
-    private ElasticsearchRestTemplate restTemplate;
-    private IndexNameGenerator indexNameGenerator;
+
     /**
-     * 线程池用于异步推送系统日志
+     * 线程池，用于异步推送系统日志
      */
-    private ScheduledExecutorService executorService;
+    private static ExecutorService executor;
+    /**
+     * es操作模板
+     */
+    private ElasticsearchRestTemplate restTemplate;
+    /**
+     * ES动态索引生成器
+     */
+    private IndexNameGenerator indexNameGenerator;
 
     @Autowired
     public void setRestTemplate(ElasticsearchRestTemplate restTemplate) {
@@ -86,24 +97,37 @@ public class SysLogManagerImpl implements SysLogManager, CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        // 初始化线程池
-        this.executorService = new ScheduledThreadPoolExecutor(CORE_POOL_SIZE, runnable -> {
-            Thread thread = new Thread(runnable, "logback-up-thread");
-            thread.setDaemon(true);
-            return thread;
-        });
+        this.shutdown(Boolean.TRUE);
 
-        // 开启日志推送线程
-        this.executorService.scheduleAtFixedRate(this::saveElasticsearch, NumberConstant.INTEGER_ONE, NumberConstant.INTEGER_ONE, TimeUnit.MILLISECONDS);
-        Runtime.getRuntime().addShutdownHook(new Thread(this::destroy));
+        // 初始化线程池
+        executor = ExecutorBuilder.create()
+                .setCorePoolSize(NumberConstant.INTEGER_FIVE)
+                .setMaxPoolSize(NumberConstant.INTEGER_FIVE)
+                .setAllowCoreThreadTimeOut(true)
+                .setWorkQueue(new LinkedBlockingQueue<>(NumberConstant.INTEGER_ONE))
+                // 设置线程拒绝策略，丢弃队列中最旧的
+                .setHandler(new ThreadPoolExecutor.CallerRunsPolicy())
+                .build();
+        executor.submit(this::saveElasticsearch);
+    }
+
+    @Override
+    public void close() {
+        this.shutdown(Boolean.FALSE);
     }
 
     /**
      * executor服务的销毁
+     *
+     * @param now 是否立即销毁
      */
-    private void destroy() {
-        if (executorService != null) {
-            executorService.shutdown();
+    private void shutdown(boolean now) {
+        if (executor != null) {
+            if (now) {
+                executor.shutdownNow();
+            } else {
+                executor.shutdown();
+            }
         }
     }
 
@@ -111,17 +135,19 @@ public class SysLogManagerImpl implements SysLogManager, CommandLineRunner {
      * 保存日志到Elasticsearch
      */
     private void saveElasticsearch() {
-        try {
-            // 创建索引和放置索引映射关系
-            indexNameGenerator.createIndex(SysLogMessage.class);
+        for (; ; ) {
+            try {
+                // 从队列中获取日志
+                TracerLogbackModel tracerLogbackModel = TRACER_LOGBACK_QUEUE.take();
 
-            // 从队列中获取日志
-            TracerLogbackModel tracerLogbackModel = TRACER_LOGBACK_QUEUE.take();
+                // 创建索引和放置索引映射关系
+                indexNameGenerator.createIndex(SysLogMessage.class);
 
-            // 构建批量保存请求
-            CollectionUtil.collectionCutting(tracerLogbackModel.getLogMessageList(), ELEMENTS_PER_LOG).forEach(logMessageList -> restTemplate.save(logMessageList));
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
+                // 构建批量保存请求
+                CollectionUtil.collectionCutting(tracerLogbackModel.getLogMessageList(), ELEMENTS_PER_LOG).forEach(logMessageList -> restTemplate.save(logMessageList));
+            } catch (Exception e) {
+                log.error(e.getMessage(), e);
+            }
         }
     }
 }

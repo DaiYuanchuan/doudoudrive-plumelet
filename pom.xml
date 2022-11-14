@@ -77,6 +77,8 @@
         <disruptor.version>3.4.4</disruptor.version>
         <!-- fastjson 版本号 -->
         <fastjson.version>1.2.83</fastjson.version>
+        <!-- es搜索 版本号 -->
+        <elasticsearch.version>7.17.1</elasticsearch.version>
         <!-- apache的commons系列工具包 -->
         <commons-io.version>2.11.0</commons-io.version>
         <commons-lang3.version>3.12.0</commons-lang3.version>
