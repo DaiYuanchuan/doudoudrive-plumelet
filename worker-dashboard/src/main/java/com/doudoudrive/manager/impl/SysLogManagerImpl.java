@@ -123,6 +123,7 @@ public class SysLogManagerImpl implements SysLogManager {
                     .content(source.getContent())
                     .level(source.getLevel())
                     .appName(source.getAppName())
+                    .currIp(source.getCurrIp())
                     .className(source.getClassName())
                     .methodName(source.getMethodName())
                     .threadName(source.getThreadName())
