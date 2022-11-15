@@ -1,5 +1,7 @@
 package com.doudoudrive.constant;
 
+import java.util.stream.Stream;
+
 /**
  * <p>基本常量配置</p>
  * <p>2022-11-09 00:56</p>
@@ -67,4 +69,67 @@ public interface ConstantConfig {
         String MMAP_FS = "mmapfs";
     }
 
+    /**
+     * 文件搜索请求中指定支持排序的字段
+     */
+    enum DiskFileSearchOrderBy {
+
+        /**
+         * 时间戳
+         */
+        TIMESTAMP("timestamp");
+
+        /**
+         * 用户属性参数的默认值
+         */
+        public final String fieldName;
+
+        DiskFileSearchOrderBy(String fieldName) {
+            this.fieldName = fieldName;
+        }
+
+        /**
+         * 判断字段名是否存在于枚举中
+         *
+         * @param fieldName 指定的字段名
+         * @return true:不存在，false:存在
+         */
+        public static boolean noneMatch(String fieldName) {
+            return Stream.of(DiskFileSearchOrderBy.values()).noneMatch(anEnum -> anEnum.fieldName.equals(fieldName));
+        }
+    }
+
+    /**
+     * 排序字段
+     */
+    enum OrderDirection {
+        /**
+         * 正序
+         */
+        ASC("ASC"),
+
+        /**
+         * 倒叙
+         */
+        DESC("DESC");
+
+        /**
+         * 排序方向
+         */
+        public final String direction;
+
+        OrderDirection(String direction) {
+            this.direction = direction;
+        }
+
+        /**
+         * 判断字段名是否存在于枚举中
+         *
+         * @param direction 指定的排序字段
+         * @return true:不存在，false:存在
+         */
+        public static boolean noneMatch(String direction) {
+            return Stream.of(OrderDirection.values()).noneMatch(anEnum -> anEnum.direction.equals(direction));
+        }
+    }
 }

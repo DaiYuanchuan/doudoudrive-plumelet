@@ -17,6 +17,7 @@
     <modules>
         <module>common</module>
         <module>worker</module>
+        <module>worker-dashboard</module>
     </modules>
 
     <!-- 项目说明 -->

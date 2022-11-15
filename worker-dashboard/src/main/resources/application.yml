@@ -1,0 +1,10 @@
+server:
+  port: 8003
+  undertow:
+    accesslog:
+      # Undertow 日志存放目录
+      dir: logs/worker-dashboard
+spring:
+  application:
+    name: workerDashboardServer
+
