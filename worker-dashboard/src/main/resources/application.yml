@@ -5,6 +5,20 @@ server:
       # Undertow 日志存放目录
       dir: logs/worker-dashboard
 spring:
+  web:
+    resources:
+      static-locations: classpath:/static/dist/
+  mvc:
+    static-path-pattern: /**
+  #配置 thymeleaf 模板
+  thymeleaf:
+    prefix: classpath:/static/dist/
+    suffix: .html
+    mode: HTML
+    encoding: UTF-8
+    cache: false
+    servlet:
+      content-type: text/html
   application:
     name: workerDashboardServer
 
