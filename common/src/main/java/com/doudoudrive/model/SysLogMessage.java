@@ -72,6 +72,12 @@ public class SysLogMessage implements Serializable {
     private String appName;
 
     /**
+     * 当前ip地址
+     */
+    @Field(type = FieldType.Text)
+    private String currIp;
+
+    /**
      * 类名
      */
     @Field(type = FieldType.Keyword)
