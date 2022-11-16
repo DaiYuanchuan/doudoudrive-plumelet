@@ -48,12 +48,14 @@
                     <div class="rb-log-dashboard-result" v-if="result.length !== 0">
                       <ul v-for="(item, index) in result" :key="index">
                         <li class="rb-log-item">
-                          <span class="keyword log-level">[{{ item['level'] }}]</span>
-                          <span class="keyword log-service">{{ item['appName'] }}</span>
-                          <!--                          <span class="keyword log-cluster">migu</span>-->
-                          <span class="keyword log-threadName">{{ item['threadName'] }}</span>
-                          <span class="keyword log-tracerId">&lt;{{ item['tracerId'] }}></span>
-                          <span class="keyword log-spanId">&lt;{{ item['spanId'] }}></span>
+                          <span class="keyword log-level"
+                                @click="keywordClick('level: '+item['level'])">[{{ item['level'] }}]</span>
+                          <span class="keyword log-service"
+                                @click="keywordClick('appName: '+item['appName'])">{{ item['appName'] }}</span>
+                          <span class="keyword log-cluster" @click="keywordClick('currIp: '+item['currIp'])">{{ item['currIp'] }}</span>
+                          <span class="keyword log-threadName" @click="keywordClick('threadName: '+item['threadName'])">[{{ item['threadName'] }}]</span>
+                          <span class="keyword log-tracerId" @click="keywordClick('tracerId: '+item['tracerId'])">&lt;{{ item['tracerId'] }}></span>
+                          <span class="keyword log-spanId" @click="keywordClick('spanId: '+item['spanId'])">&lt;{{ item['spanId'] }}></span>
                           <span class="keyword log-biz"></span>
                           <span class="log-message">
                             {{ item['timestamp'] }}
@@ -308,6 +310,14 @@ const selectChange = (val) => {
   if (val != undefined && val.length > 0 && val[val.length - 1].indexOf(":") == -1) {
     val[val.length - 1] = "content: " + val[val.length - 1]
   }
+}
+
+/**
+ * 关键字中的点击事件
+ * @param val 内容
+ */
+const keywordClick = (val) => {
+  keyword.value.push(val)
 }
 
 /**
