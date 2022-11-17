@@ -88,7 +88,7 @@ public class SysLogManagerImpl implements SysLogManager {
                 .withQuery(builder);
 
         // 排序字段构建
-        queryBuilder.withSorts(SortBuilders.fieldSort(ConstantConfig.DiskFileSearchOrderBy.TIMESTAMP.fieldName).order(SortOrder.DESC));
+        queryBuilder.withSorts(SortBuilders.fieldSort(ConstantConfig.DiskFileSearchOrderBy.BUSINESS_ID.fieldName).order(SortOrder.DESC));
 
         // 构建分页语句
         queryBuilder.withPageable(PageRequest.of(request.getPage() - NumberConstant.INTEGER_ONE, request.getPageSize()));
