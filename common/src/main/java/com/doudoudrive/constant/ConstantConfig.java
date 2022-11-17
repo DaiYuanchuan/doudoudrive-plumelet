@@ -74,6 +74,9 @@ public interface ConstantConfig {
      */
     enum DiskFileSearchOrderBy {
 
+        /**
+         * 业务id
+         */
         BUSINESS_ID("businessId"),
 
         /**
