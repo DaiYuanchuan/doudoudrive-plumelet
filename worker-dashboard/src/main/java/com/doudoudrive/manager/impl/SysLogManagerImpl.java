@@ -105,7 +105,8 @@ public class SysLogManagerImpl implements SysLogManager {
         response.setPage(request.getPage());
         response.setPageSize(request.getPageSize());
         response.setRows(convertResponse(searchHits.getSearchHits()));
-        response.setTotal(searchHits.getTotalHits());
+        // 这里最多显示10000条数据
+        response.setTotal(Math.min(searchHits.getTotalHits(), NumberConstant.LONG_TEN_THOUSAND));
         return response;
     }
 
