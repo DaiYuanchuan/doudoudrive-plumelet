@@ -92,7 +92,7 @@
         <spring-cloud-alibaba.version>2021.0.4.0</spring-cloud-alibaba.version>
         <spring-integration-ip.version>5.5.15</spring-integration-ip.version>
         <!-- nacos客户端依赖包版本 -->
-        <nacos-client.version>2.1.1</nacos-client.version>
+        <nacos-client.version>2.1.2</nacos-client.version>
     </properties>
 
     <!-- spring maven 远程仓库 start -->
