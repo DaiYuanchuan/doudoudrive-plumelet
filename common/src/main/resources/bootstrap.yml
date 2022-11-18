@@ -7,13 +7,14 @@ spring:
         server-addr: ${SERVER_ADDR:https://nacos.novelweb.cn}
         ip: ${ENV_IP:}
         port: ${ENV_PORT:-1}
+        group: DOUDOU_DEV_GROUP
       config:
         # 对应的是nacos config 中的 Data ID
         prefix: doudou-server
         # 命名空间 dev、test、prod 等，用来做环境隔离
         namespace: ${spring.cloud.nacos.discovery.namespace}
         # 配置组，用来做项目隔离
-        group: DOUDOU_DEV_GROUP
+        group: ${spring.cloud.nacos.discovery.group}
         file-extension: yml
         # nacos 配置中心地址
         server-addr: ${spring.cloud.nacos.discovery.server-addr}
