@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <!-- 继承父类 -->
+    <parent>
+        <artifactId>doudoudrive-plumelet</artifactId>
+        <groupId>com.doudoudrive</groupId>
+        <version>1.0.0</version>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>common</artifactId>
+    <packaging>jar</packaging>
+
+    <!-- 项目说明 -->
+    <name>${project.artifactId}</name>
+    <description>兜兜网络科技工作室-日志系统公共模块</description>
+    <url>https://www.doudoudrive.com/</url>
+    <!-- 项目说明 -->
+
+    <!-- 附带属性 -->
+    <properties>
+        <!-- 文件拷贝时的编码 -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <!-- 编译时的编码 -->
+        <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <java.version>17</java.version>
+        <!-- 打包跳过单元测试 -->
+        <skipTests>true</skipTests>
+    </properties>
+
+    <!-- 项目依赖 -->
+    <dependencies>
+
+        <!-- loadbalancer -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-loadbalancer</artifactId>
+        </dependency>
+
+        <!-- feign服务 -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
+
+        <!-- nacos -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+        </dependency>
+        <!-- nacos -->
+
+        <!-- elasticsearch -->
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-elasticsearch</artifactId>
+        </dependency>
+        <!-- 4.x 版本的spring-data-elasticsearch需要携带2.7.*版本的spring-data-commons -->
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-commons</artifactId>
+        </dependency>
+
+        <!-- 工具包系列 -->
+        <!-- fastjson -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+        </dependency>
+        <!-- apache的commons系列包 系列通用公共组件包 -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-net</groupId>
+            <artifactId>commons-net</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpmime</artifactId>
+        </dependency>
+        <!-- facebook开源压缩算法zstd，用以实现极致的压缩 -->
+        <dependency>
+            <groupId>com.github.luben</groupId>
+            <artifactId>zstd-jni</artifactId>
+        </dependency>
+        <!-- protostuff 序列化工具 -->
+        <dependency>
+            <groupId>io.protostuff</groupId>
+            <artifactId>protostuff-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.protostuff</groupId>
+            <artifactId>protostuff-runtime</artifactId>
+        </dependency>
+        <!-- 工具包系列 -->
+
+    </dependencies>
+    <!-- 项目依赖 -->
+
+    <!-- 依赖的插件配置 -->
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+</project>

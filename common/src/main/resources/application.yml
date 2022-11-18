@@ -1,0 +1,52 @@
+server:
+  servlet:
+    context-path: /
+  undertow:
+    accesslog:
+      # Undertow 日志存放目录
+      dir: logs/common
+      # 是否启动日志
+      enabled: true
+      # 日志格式
+      pattern: common
+      # 日志文件名前缀
+      prefix: access_
+      # 日志文件名后缀
+      suffix: log
+    # HTTP POST请求最大的大小
+    max-http-post-size: 2048MB
+    # 以下的配置会影响buffer,这些buffer会用于服务器连接的IO操作,有点类似netty的池化内存管理
+    # 每块buffer的空间大小,越小的空间被利用越充分
+    buffer-size: 1024
+    # 是否分配的直接内存
+    direct-buffers: true
+    threads:
+      io: 8
+      worker: 64
+  # 优雅停机配置
+  shutdown: graceful
+spring:
+  output:
+    ansi:
+      enabled: ALWAYS
+  mvc:
+    view:
+      suffix: .html
+  lifecycle:
+    # 设置缓冲期，最大等待时间
+    timeout-per-shutdown-phase: 30s
+  #配置 thymeleaf 模板
+  thymeleaf:
+    prefix: classpath:/static/
+    suffix: .html
+    mode: LEGACYHTML5
+    encoding: UTF-8
+    cache: false
+    servlet:
+      content-type: text/html
+  servlet:
+    multipart:
+      #设置单个上传文件的大小(单位字节)(4G)
+      max-file-size: 4294967296
+      #设置单次请求的文件上传的总大小(单位字节)(4G)
+      max-request-size: 4294967296
