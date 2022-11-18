@@ -37,6 +37,10 @@ public class BigTracerController {
     @ResponseBody
     @PostMapping(value = "/receive")
     public void receiveBigTrace(@RequestBody byte[] bytes) {
+        // 接收到tcp大日志消息
+        if (log.isDebugEnabled()) {
+            log.debug("tcp receive big trace");
+        }
         // 批量保存系统日志消息
         sysLogManager.saveBatch(bytes);
     }
