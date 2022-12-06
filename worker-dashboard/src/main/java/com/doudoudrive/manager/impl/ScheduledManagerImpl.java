@@ -1,6 +1,7 @@
 package com.doudoudrive.manager.impl;
 
 import com.doudoudrive.config.IndexNameGenerator;
+import com.doudoudrive.constant.ConstantConfig;
 import com.doudoudrive.manager.ScheduledManager;
 import com.doudoudrive.model.SysLogMessage;
 import lombok.extern.slf4j.Slf4j;
@@ -22,14 +23,6 @@ import org.springframework.stereotype.Service;
 @Service("scheduledManager")
 public class ScheduledManagerImpl implements ScheduledManager, CommandLineRunner {
 
-    /**
-     * 系统logback日志索引模板的名称
-     */
-    private static final String SYS_LOGBACK_TEMPLATE_NAME = "sys_logback_template";
-    /**
-     * 系统logback日志索引模板需要匹配的索引名称，可用使用通配符
-     */
-    private static final String SYS_LOGBACK_INDEX_PATTERN = "sys_logback_*";
     /**
      * ES动态索引生成器
      */
@@ -59,6 +52,6 @@ public class ScheduledManagerImpl implements ScheduledManager, CommandLineRunner
      */
     @Override
     public void run(String... args) throws Exception {
-        indexNameGenerator.putTemplate(SysLogMessage.class, SYS_LOGBACK_TEMPLATE_NAME, SYS_LOGBACK_INDEX_PATTERN);
+        indexNameGenerator.putTemplate(SysLogMessage.class, ConstantConfig.IndexName.SYS_LOGBACK_TEMPLATE_NAME, ConstantConfig.IndexName.SYS_LOGBACK_INDEX_PATTERN);
     }
 }

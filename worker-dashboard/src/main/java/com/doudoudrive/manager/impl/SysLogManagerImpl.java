@@ -20,6 +20,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.stereotype.Service;
@@ -98,8 +99,10 @@ public class SysLogManagerImpl implements SysLogManager {
         // 返回实际命中数
         searchQuery.setTrackTotalHits(true);
 
+        // 指定需要查询的索引
+        IndexCoordinates indexCoordinates = IndexCoordinates.of(ConstantConfig.IndexName.SYS_LOGBACK_INDEX_PATTERN);
         // 执行搜素请求
-        SearchHits<SysLogMessage> searchHits = restTemplate.search(searchQuery, SysLogMessage.class);
+        SearchHits<SysLogMessage> searchHits = restTemplate.search(searchQuery, SysLogMessage.class, indexCoordinates);
 
         // 构建返回对象
         PageResponse<SysLogMessageModel> response = new PageResponse<>();

@@ -39,6 +39,16 @@ public interface ConstantConfig {
      */
     interface IndexName {
         String SYS_LOGBACK = "sys_logback";
+
+        /**
+         * 系统logback日志索引模板的名称
+         */
+        String SYS_LOGBACK_TEMPLATE_NAME = SYS_LOGBACK + SpecialSymbols.UNDERLINE + "template";
+
+        /**
+         * 系统logback日志索引模板需要匹配的索引名称，使用通配符
+         */
+        String SYS_LOGBACK_INDEX_PATTERN = SYS_LOGBACK + SpecialSymbols.UNDERLINE + SpecialSymbols.ASTERISK;
     }
 
     /**
