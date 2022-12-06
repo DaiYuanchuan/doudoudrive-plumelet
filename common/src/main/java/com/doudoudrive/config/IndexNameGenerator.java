@@ -48,14 +48,39 @@ public class IndexNameGenerator {
         return ConstantConfig.IndexName.SYS_LOGBACK + ConstantConfig.SpecialSymbols.UNDERLINE + timestamp;
     }
 
+    /**
+     * 创建索引模板
+     *
+     * @param entityClass   索引模板对应的实例对象
+     * @param templateName  索引模板名称
+     * @param indexPatterns 索引模板需要匹配的索引名称，如：sys_logback_*
+     * @return 是否创建成功
+     */
     public boolean putTemplate(Class<?> entityClass, String templateName, String... indexPatterns) {
-        // 判断索引是否存在，不存在时会自动创建
+        // 判断索引模板是否存在，不存在时去创建索引模板
         IndexOperations indexOperations = restTemplate.indexOps(entityClass);
-        PutTemplateRequest request = PutTemplateRequest.builder(templateName, indexPatterns)
-                .withSettings(Document.from(indexOperations.createSettings()))
-                .withMappings(Document.from(indexOperations.createMapping()))
-                .build();
-        return indexOperations.putTemplate(request);
+        // 判断索引模板是否存在
+        if (indexOperations.getTemplate(templateName) == null) {
+            PutTemplateRequest request = PutTemplateRequest.builder(templateName, indexPatterns)
+                    .withSettings(Document.from(indexOperations.createSettings()))
+                    .withMappings(Document.from(indexOperations.createMapping()))
+                    .build();
+            return indexOperations.putTemplate(request);
+        }
+        //  索引模板已存在，直接返回true
+        return Boolean.TRUE;
+    }
+
+    /**
+     * 删除索引模板
+     *
+     * @param entityClass  索引模板对应的实例对象
+     * @param templateName 索引模板名称
+     * @return 是否删除成功
+     */
+    public boolean deleteTemplate(Class<?> entityClass, String templateName) {
+        IndexOperations indexOperations = restTemplate.indexOps(entityClass);
+        return indexOperations.deleteTemplate(templateName);
     }
 
     /**
@@ -84,9 +109,10 @@ public class IndexNameGenerator {
         if (!indexOperations.exists()) {
             // 创建索引
             indexOperations.create();
-            Document mapping = indexOperations.createMapping(entityClass);
+            // 为该索引操作绑定到的实体创建索引映射
+            indexOperations.createMapping();
             // 将映射写入此IndexOperations绑定到的类的索引
-            indexOperations.putMapping(mapping);
+            indexOperations.putMapping();
         }
     }
 }
