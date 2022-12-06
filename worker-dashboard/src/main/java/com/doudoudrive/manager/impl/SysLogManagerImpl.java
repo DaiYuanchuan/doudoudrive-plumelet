@@ -25,6 +25,7 @@ import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilde
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -104,13 +105,13 @@ public class SysLogManagerImpl implements SysLogManager {
         PageResponse<SysLogMessageModel> response = new PageResponse<>();
         response.setPage(request.getPage());
         response.setPageSize(request.getPageSize());
-        response.setRows(convertResponse(searchHits.getSearchHits()));
+        response.setRows(convertResponse(searchHits.getSearchHits(), request.getSort()));
         // 这里最多显示10000条数据
         response.setTotal(Math.min(searchHits.getTotalHits(), NumberConstant.LONG_TEN_THOUSAND));
         return response;
     }
 
-    public List<SysLogMessageModel> convertResponse(List<SearchHit<SysLogMessage>> searchHit) {
+    public List<SysLogMessageModel> convertResponse(List<SearchHit<SysLogMessage>> searchHit, Boolean sort) {
         if (searchHit == null) {
             return null;
         }
@@ -131,6 +132,12 @@ public class SysLogManagerImpl implements SysLogManager {
                     .timestamp(source.getTimestamp())
                     .build());
         }
+
+        if (sort) {
+            // 根据业务标识进行排序，是防止出现时间戳相同的情况导致日志乱序
+            list.sort(Comparator.comparing(SysLogMessageModel::getBusinessId));
+        }
+
         return list;
     }
 }
