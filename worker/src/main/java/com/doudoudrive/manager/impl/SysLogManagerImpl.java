@@ -57,10 +57,12 @@ public class SysLogManagerImpl implements SysLogManager, CommandLineRunner, Clos
      * 线程池，用于异步推送系统日志
      */
     private static ExecutorService executor;
+
     /**
      * es操作模板
      */
     private ElasticsearchRestTemplate restTemplate;
+
     /**
      * ES动态索引生成器
      */

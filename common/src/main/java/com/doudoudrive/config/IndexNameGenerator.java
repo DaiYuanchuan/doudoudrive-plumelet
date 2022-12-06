@@ -109,10 +109,6 @@ public class IndexNameGenerator {
         if (!indexOperations.exists()) {
             // 创建索引
             indexOperations.create();
-            // 为该索引操作绑定到的实体创建索引映射
-            indexOperations.createMapping();
-            // 将映射写入此IndexOperations绑定到的类的索引
-            indexOperations.putMapping();
         }
     }
 }
