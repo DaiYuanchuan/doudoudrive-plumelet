@@ -54,6 +54,11 @@ public class QueryElasticsearchSysLogRequestDTO {
     private Integer pageSize;
 
     /**
+     * 当前页排序
+     */
+    private Boolean sort;
+
+    /**
      * 第几页
      *
      * @return 返回页码，默认为1，最小为1
@@ -69,5 +74,14 @@ public class QueryElasticsearchSysLogRequestDTO {
      */
     public Integer getPageSize() {
         return Math.min(Math.max(Optional.ofNullable(pageSize).orElse(NumberConstant.INTEGER_TWENTY), NumberConstant.INTEGER_ONE), NumberConstant.INTEGER_HUNDRED);
+    }
+
+    /**
+     * 当前页排序，只适用于当前页，不适用于全局排序
+     *
+     * @return 返回排序，默认为false，false为降序，true为升序
+     */
+    public Boolean getSort() {
+        return Optional.ofNullable(sort).orElse(Boolean.FALSE);
     }
 }

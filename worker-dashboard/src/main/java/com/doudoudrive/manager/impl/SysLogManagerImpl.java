@@ -20,11 +20,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -97,20 +99,22 @@ public class SysLogManagerImpl implements SysLogManager {
         // 返回实际命中数
         searchQuery.setTrackTotalHits(true);
 
+        // 指定需要查询的索引
+        IndexCoordinates indexCoordinates = IndexCoordinates.of(ConstantConfig.IndexName.SYS_LOGBACK_INDEX_PATTERN);
         // 执行搜素请求
-        SearchHits<SysLogMessage> searchHits = restTemplate.search(searchQuery, SysLogMessage.class);
+        SearchHits<SysLogMessage> searchHits = restTemplate.search(searchQuery, SysLogMessage.class, indexCoordinates);
 
         // 构建返回对象
         PageResponse<SysLogMessageModel> response = new PageResponse<>();
         response.setPage(request.getPage());
         response.setPageSize(request.getPageSize());
-        response.setRows(convertResponse(searchHits.getSearchHits()));
+        response.setRows(convertResponse(searchHits.getSearchHits(), request.getSort()));
         // 这里最多显示10000条数据
         response.setTotal(Math.min(searchHits.getTotalHits(), NumberConstant.LONG_TEN_THOUSAND));
         return response;
     }
 
-    public List<SysLogMessageModel> convertResponse(List<SearchHit<SysLogMessage>> searchHit) {
+    public List<SysLogMessageModel> convertResponse(List<SearchHit<SysLogMessage>> searchHit, Boolean sort) {
         if (searchHit == null) {
             return null;
         }
@@ -131,6 +135,12 @@ public class SysLogManagerImpl implements SysLogManager {
                     .timestamp(source.getTimestamp())
                     .build());
         }
+
+        if (sort) {
+            // 根据业务标识进行排序，是防止出现时间戳相同的情况导致日志乱序
+            list.sort(Comparator.comparing(SysLogMessageModel::getBusinessId));
+        }
+
         return list;
     }
 }

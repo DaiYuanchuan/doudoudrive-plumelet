@@ -52,10 +52,15 @@
                                 @click="keywordClick('level: '+item['level'])">[{{ item['level'] }}]</span>
                           <span class="keyword log-service"
                                 @click="keywordClick('appName: '+item['appName'])">{{ item['appName'] }}</span>
-                          <span class="keyword log-cluster" @click="keywordClick('currIp: '+item['currIp'])">{{ item['currIp'] }}</span>
-                          <span class="keyword log-threadName" @click="keywordClick('threadName: '+item['threadName'])">[{{ item['threadName'] }}]</span>
-                          <span class="keyword log-tracerId" @click="keywordClick('tracerId: '+item['tracerId'])">&lt;{{ item['tracerId'] }}></span>
-                          <span class="keyword log-spanId" @click="keywordClick('spanId: '+item['spanId'])">&lt;{{ item['spanId'] }}></span>
+                          <span class="keyword log-cluster"
+                                @click="keywordClick('currIp: '+item['currIp'])">{{ item['currIp'] }}</span>
+                          <span class="keyword log-threadName" @click="keywordClick('threadName: '+item['threadName'])">[{{
+                              item['threadName']
+                            }}]</span>
+                          <span class="keyword log-tracerId"
+                                @click="keywordClick('tracerId: '+item['tracerId'])">&lt;{{ item['tracerId'] }}></span>
+                          <span class="keyword log-spanId"
+                                @click="keywordClick('spanId: '+item['spanId'])">&lt;{{ item['spanId'] }}></span>
                           <span class="keyword log-biz"></span>
                           <span class="log-message">
                             {{ item['timestamp'] }}
@@ -283,6 +288,12 @@ const searchButton = () => {
 
   if (keyword.value.length > 0) {
     params['keyword'] = keyword.value
+  }
+
+  // 最大页码
+  let maxPage = page.value.total / page.value.pageSize
+  if (page.value.page > maxPage) {
+    page.value.page = maxPage
   }
 
   params['page'] = page.value.page
