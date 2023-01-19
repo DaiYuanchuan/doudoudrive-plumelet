@@ -1,15 +1,24 @@
 package com.doudoudrive.config;
 
 import com.doudoudrive.constant.ConstantConfig;
+import com.doudoudrive.constant.NumberConstant;
+import org.elasticsearch.client.RequestOptions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
+import org.springframework.data.elasticsearch.core.IndexInformation;
 import org.springframework.data.elasticsearch.core.IndexOperations;
 import org.springframework.data.elasticsearch.core.document.Document;
 import org.springframework.data.elasticsearch.core.index.PutTemplateRequest;
+import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * <p>ES动态索引生成器</p>
@@ -94,6 +103,66 @@ public class IndexNameGenerator {
         if (!indexOperations.exists()) {
             synchronized (this) {
                 createIndexAndPutMapping(entityClass);
+            }
+        }
+    }
+
+    private static List<String> getMonthByPeriodTime(LocalDateTime start, LocalDateTime end) {
+        return Stream.iterate(start, localDate -> localDate.plusMonths(NumberConstant.INTEGER_ONE))
+                // 截断无限流，长度为起始时间和结束时间的差+1个
+                .limit(ChronoUnit.MONTHS.between(start, end) + NumberConstant.INTEGER_ONE)
+                // 转换成字符串
+                .map(time -> time.format(DateTimeFormatter.ofPattern(PURE_DATETIME_PATTERN)))
+                // 把流收集为List
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * 删除指定月份的索引
+     *
+     * @param indexNames 索引名称，支持通配符，如：sys_logback_*
+     * @param month      需要保留的月份数量，例如：1表示删除所有除了当前月份的索引和上个月份的索引，2表示删除所有的除了当前月份和上两个月份的索引
+     */
+    public void deleteIndex(String indexNames, Integer month) {
+        // 指定需要查询的索引
+        IndexCoordinates indexCoordinates = IndexCoordinates.of(indexNames);
+        IndexOperations indexOperations = restTemplate.indexOps(indexCoordinates);
+        // 获取到当前月
+        List<String> monthList = getMonthByPeriodTime(LocalDateTime.now().minus(month, ChronoUnit.MONTHS), LocalDateTime.now());
+
+        // 要删除的索引数据
+        List<String> index = new ArrayList<>();
+        for (IndexInformation indexInformation : indexOperations.getInformation()) {
+            // 判断索引是否在指定的月份内
+            if (!monthList.contains(indexInformation.getName().substring(indexInformation.getName()
+                    .lastIndexOf(ConstantConfig.SpecialSymbols.UNDERLINE) + NumberConstant.INTEGER_ONE))) {
+                index.add(indexInformation.getName());
+            }
+        }
+
+        if (!index.isEmpty()) {
+            // 删除索引
+            restTemplate.indexOps(IndexCoordinates.of(index.toArray(new String[0])));
+        }
+    }
+
+    /**
+     * 关闭指定月份的索引
+     *
+     * @param indexNames 索引名称，支持通配符，如：sys_logback_*
+     * @param month      需要保留的月份数量，例如：1表示关闭所有除了当前月份的索引和上个月份的索引，2表示关闭所有的除了当前月份和上两个月份的索引
+     */
+    public void closeIndex(String indexNames, Integer month) {
+        // 指定需要查询的索引
+        IndexCoordinates indexCoordinates = IndexCoordinates.of(indexNames);
+        IndexOperations indexOperations = restTemplate.indexOps(indexCoordinates);
+        // 获取到当前月
+        List<String> monthList = getMonthByPeriodTime(LocalDateTime.now().minus(month, ChronoUnit.MONTHS), LocalDateTime.now());
+        for (IndexInformation indexInformation : indexOperations.getInformation()) {
+            // 判断索引是否在指定的月份内
+            if (!monthList.contains(indexInformation.getName().substring(indexInformation.getName()
+                    .lastIndexOf(ConstantConfig.SpecialSymbols.UNDERLINE) + NumberConstant.INTEGER_ONE))) {
+                restTemplate.execute(client -> client.indices().close(new org.elasticsearch.client.indices.CloseIndexRequest(indexInformation.getName()), RequestOptions.DEFAULT));
             }
         }
     }
