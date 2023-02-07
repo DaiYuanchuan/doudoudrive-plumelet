@@ -109,8 +109,8 @@ import axios from "axios";
 
 // 搜索关键词
 const keyword = ref<string[]>([])
-// 搜索时间
-const searchTime = ref('')
+// 搜索时间(默认过去10分钟)
+const searchTime = ref([formatDate(new Date(new Date().getTime() - 10 * 60 * 1000),'yyyy-MM-dd hh:mm:ss'), formatDate(new Date(),'yyyy-MM-dd hh:mm:ss')])
 // 当前页排序，默认false
 const sort = ref(false)
 
