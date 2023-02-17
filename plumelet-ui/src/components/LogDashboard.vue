@@ -81,12 +81,17 @@
                 </div>
               </div>
             </div>
-            <el-pagination background
-                           @size-change="handleSizeChange"
-                           @current-change="handleCurrentChange"
-                           :page-sizes="[10, 20, 30, 40, 50, 100]"
-                           layout="total, sizes, prev, pager, next, jumper"
-                           :total="page.total"/>
+            <div class="left">
+              <el-checkbox v-model="sort" label="当前页日志时间顺序排列" size="large" @change="checkboxSortChange"/>
+            </div>
+            <div class="right">
+              <el-pagination background
+                             @size-change="handleSizeChange"
+                             @current-change="handleCurrentChange"
+                             :page-sizes="[10, 20, 30, 40, 50, 100]"
+                             layout="total, sizes, prev, pager, next, jumper"
+                             :total="page.total"/>
+            </div>
           </div>
         </el-main>
       </el-container>
@@ -104,8 +109,10 @@ import axios from "axios";
 
 // 搜索关键词
 const keyword = ref<string[]>([])
-// 搜索时间
-const searchTime = ref('')
+// 搜索时间(默认过去10分钟)
+const searchTime = ref([formatDate(new Date(new Date().getTime() - 10 * 60 * 1000),'yyyy-MM-dd hh:mm:ss'), formatDate(new Date(),'yyyy-MM-dd hh:mm:ss')])
+// 当前页排序，默认false
+const sort = ref(false)
 
 const shortcuts = [
   {
@@ -299,6 +306,9 @@ const searchButton = () => {
   params['page'] = page.value.page
   params['pageSize'] = page.value.pageSize
 
+  // 当前页排序
+  params['sort'] = sort.value
+
   getIndexStructure(params).then((response) => {
     if (response != undefined && response['code'] == 200 && response['data']['rows'] != undefined && response['data']['rows'].length > 0) {
       result.value = response['data']['rows']
@@ -321,6 +331,14 @@ const selectChange = (val) => {
   if (val != undefined && val.length > 0 && val[val.length - 1].indexOf(":") == -1) {
     val[val.length - 1] = "content: " + val[val.length - 1]
   }
+}
+
+/**
+ * 排序的单选框被选择后触发
+ * @param val 排序的值
+ */
+const checkboxSortChange = (val) => {
+  searchButton()
 }
 
 /**
@@ -518,6 +536,19 @@ ul {
 
 .left-container {
   padding: 0 10px;
+}
+
+.right {
+  position: relative;
+  overflow: hidden;
+  float: right;
+}
+
+.left {
+  float: left;
+  background-color: #fff;
+  -webkit-transition: width .3s, left .3s;
+  transition: width .3s, left .3s;
 }
 
 </style>
