@@ -298,7 +298,7 @@ const searchButton = () => {
   }
 
   // 最大页码
-  let maxPage = page.value.total / page.value.pageSize
+  let maxPage = page.value.total % page.value.pageSize > 0 ? page.value.total / page.value.pageSize + 1 : page.value.total / page.value.pageSize;
   if (page.value.page > maxPage) {
     page.value.page = maxPage
   }
