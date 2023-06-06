@@ -103,10 +103,10 @@ public class SysLogManagerImpl implements SysLogManager, CommandLineRunner, Clos
 
         // 初始化线程池
         executor = ExecutorBuilder.create()
-                .setCorePoolSize(NumberConstant.INTEGER_FIVE)
-                .setMaxPoolSize(NumberConstant.INTEGER_FIVE)
+                .setCorePoolSize(NumberConstant.INTEGER_ONE)
+                .setMaxPoolSize(NumberConstant.INTEGER_ONE)
                 .setAllowCoreThreadTimeOut(true)
-                .setWorkQueue(new LinkedBlockingQueue<>(NumberConstant.INTEGER_ONE))
+                .setWorkQueue(new LinkedBlockingQueue<>(NumberConstant.INTEGER_TEN))
                 // 设置线程拒绝策略，丢弃队列中最旧的
                 .setHandler(new ThreadPoolExecutor.CallerRunsPolicy())
                 .build();
@@ -137,7 +137,7 @@ public class SysLogManagerImpl implements SysLogManager, CommandLineRunner, Clos
      * 保存日志到Elasticsearch
      */
     private void saveElasticsearch() {
-        for (; ; ) {
+        while (null != executor && !executor.isShutdown()) {
             try {
                 // 从队列中获取日志
                 TracerLogbackModel tracerLogbackModel = TRACER_LOGBACK_QUEUE.take();

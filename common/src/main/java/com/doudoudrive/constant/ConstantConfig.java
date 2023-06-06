@@ -29,6 +29,8 @@ public interface ConstantConfig {
         String HYPHEN = "-";
         String UNDERLINE = "_";
         String CURLY_BRACES = "{}";
+        String LEFT_BRACE = "{";
+        String RIGHT_BRACE = "}";
         String LEFT_BRACKET = "(";
         String RIGHT_BRACKET = ")";
         String ENTER_LINUX = "\n";
@@ -146,5 +148,28 @@ public interface ConstantConfig {
         public static boolean noneMatch(String direction) {
             return Stream.of(OrderDirection.values()).noneMatch(anEnum -> anEnum.direction.equals(direction));
         }
+    }
+
+    /**
+     * RocketMQ主题相关常量
+     */
+    interface Topic {
+
+        /**
+         * 延迟消息队列服务
+         */
+        String DELAY_MESSAGE_QUEUE_SERVICE = "DELAY_MESSAGE_QUEUE_SERVICE";
+    }
+
+    /**
+     * 缓存相关的常量
+     */
+    interface Cache {
+
+        /**
+         * redis延迟队列专用消息通道
+         */
+        String REDIS_DELAY_QUEUE_CHANNEL = "REDIS_DELAY_QUEUE_CHANNEL:";
+
     }
 }
