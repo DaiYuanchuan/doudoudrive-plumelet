@@ -81,7 +81,7 @@ public class SysLogManagerImpl implements SysLogManager {
                         // 日志内容需要使用模糊搜索
                         builder.must(QueryBuilders.wildcardQuery(CONTENT, String.format(FUZZY_SEARCH, key[1].trim())));
                     } else {
-                        builder.must(QueryBuilders.termQuery(key[0].trim(), key[1].trim()));
+                        builder.must(QueryBuilders.termQuery(String.format(KEYWORD, key[0].trim()), key[1].trim()));
                     }
                 }
             }
