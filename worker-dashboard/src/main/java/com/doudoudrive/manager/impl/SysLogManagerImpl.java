@@ -45,6 +45,12 @@ public class SysLogManagerImpl implements SysLogManager {
      * 模糊搜索时的通配符
      */
     private static final String FUZZY_SEARCH = "*%s*";
+
+    /**
+     * es搜索关键字后缀，不分词搜索
+     */
+    private static final String KEYWORD = "%s.keyword";
+
     private ElasticsearchRestTemplate restTemplate;
 
     @Autowired
@@ -75,7 +81,7 @@ public class SysLogManagerImpl implements SysLogManager {
                         // 日志内容需要使用模糊搜索
                         builder.must(QueryBuilders.wildcardQuery(CONTENT, String.format(FUZZY_SEARCH, key[1].trim())));
                     } else {
-                        builder.must(QueryBuilders.termQuery(key[0].trim(), key[1].trim()));
+                        builder.must(QueryBuilders.termQuery(String.format(KEYWORD, key[0].trim()), key[1].trim()));
                     }
                 }
             }
