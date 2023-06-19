@@ -33,7 +33,7 @@
             />
           </el-select>
         </div>
-        <el-button type="primary" :icon="Search" @click="searchButton">搜索</el-button>
+        <el-button type="primary" :icon="Search" @click="searchBtn">搜索</el-button>
       </el-header>
       <el-container>
         <!-- main -->
@@ -100,12 +100,10 @@
 </template>
 
 <script lang="ts" setup>
-import {ref, onMounted} from 'vue'
+import {onMounted, ref} from 'vue'
 import {Search} from '@element-plus/icons-vue'
 import {getIndexStructure} from '@/api/elasticsearch'
 import {formatDate} from '@/util/utils'
-import {ElMessage} from 'element-plus'
-import axios from "axios";
 
 // 搜索关键词
 const keyword = ref<string[]>([])
@@ -281,6 +279,13 @@ let page = ref({
 onMounted(() => {
   searchButton()
 });
+
+const searchBtn = () => {
+  // 重置分页
+  page.value.page = 1
+  page.value.total = 1
+  searchButton()
+}
 
 /**
  * 搜索按钮调用
