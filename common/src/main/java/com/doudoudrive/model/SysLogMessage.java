@@ -74,19 +74,19 @@ public class SysLogMessage implements Serializable {
     /**
      * 当前ip地址
      */
-    @Field(type = FieldType.Text)
+    @Field(type = FieldType.Keyword)
     private String currIp;
 
     /**
      * 类名
      */
-    @Field(type = FieldType.Keyword)
+    @Field(type = FieldType.Text)
     private String className;
 
     /**
      * 方法名
      */
-    @Field(type = FieldType.Keyword)
+    @Field(type = FieldType.Text)
     private String methodName;
 
     /**

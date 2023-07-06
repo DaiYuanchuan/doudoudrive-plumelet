@@ -41,6 +41,9 @@ import java.util.List;
 public class SysLogManagerImpl implements SysLogManager {
 
     private static final String CONTENT = "content";
+    private static final String CLASS_NAME = "className";
+    private static final String METHOD_NAME = "methodName";
+    private static final String THREAD_NAME = "threadName";
     /**
      * 模糊搜索时的通配符
      */
@@ -77,11 +80,14 @@ public class SysLogManagerImpl implements SysLogManager {
                 String[] key = keyword.split(ConstantConfig.SpecialSymbols.ENGLISH_COLON);
 
                 if (StringUtils.isNotBlank(key[0]) && StringUtils.isNotBlank(key[1])) {
-                    if (key[0].trim().equals(CONTENT)) {
+                    if (CONTENT.equals(key[0].trim())) {
                         // 日志内容需要使用模糊搜索
                         builder.must(QueryBuilders.wildcardQuery(CONTENT, String.format(FUZZY_SEARCH, key[1].trim())));
+                    } else if (CLASS_NAME.equals(key[0].trim()) || METHOD_NAME.equals(key[0].trim()) || THREAD_NAME.equals(key[0].trim())) {
+                        builder.must(QueryBuilders.matchPhraseQuery(key[0].trim(), key[1].trim()));
                     } else {
-                        builder.must(QueryBuilders.termQuery(String.format(KEYWORD, key[0].trim()), key[1].trim()));
+                        // 其他字段不分词搜索
+                        builder.must(QueryBuilders.termQuery(key[0].trim(), key[1].trim()));
                     }
                 }
             }
