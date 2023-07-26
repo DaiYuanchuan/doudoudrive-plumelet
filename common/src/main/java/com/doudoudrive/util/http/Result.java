@@ -3,9 +3,12 @@ package com.doudoudrive.util.http;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.springframework.lang.Nullable;
+import org.springframework.util.ObjectUtils;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.Optional;
 
 /**
  * <p>状态返回类，数据返回响应的封装</p>
@@ -49,6 +52,28 @@ public class Result<T> implements Serializable {
 
     public static <T> Result<T> build(Integer code, String message, T data) {
         return new Result<>(code, message, data);
+    }
+
+    /**
+     * 判断返回是否为成功
+     *
+     * @param result Result
+     * @return 是否成功
+     */
+    public static boolean isSuccess(@Nullable Result<?> result) {
+        return Optional.ofNullable(result)
+                .map(x -> ObjectUtils.nullSafeEquals(200, x.code))
+                .orElse(Boolean.FALSE);
+    }
+
+    /**
+     * 判断返回是否为成功
+     *
+     * @param result Result
+     * @return 是否成功
+     */
+    public static boolean isNotSuccess(@Nullable Result<?> result) {
+        return !Result.isSuccess(result);
     }
 
     public Integer getCode() {

@@ -1,9 +1,11 @@
 package com.doudoudrive.manager.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.doudoudrive.client.LogServerFeignClient;
 import com.doudoudrive.constant.NumberConstant;
 import com.doudoudrive.constant.RedisDelayedQueueEnum;
 import com.doudoudrive.model.CreateMqConsumerRecordRequestDTO;
+import com.doudoudrive.util.http.Result;
 import com.doudoudrive.util.lang.RedisTemplateClient;
 import com.doudoudrive.util.thread.ExecutorBuilder;
 import lombok.extern.slf4j.Slf4j;
@@ -103,7 +105,15 @@ public class DelayedQueueTransferManager implements CommandLineRunner, Closeable
                             .delayedQueue(delayedQueue.name())
                             .element(element)
                             .build();
-                    logServerFeignClient.createRecord(consumerRecordRequest);
+                    try {
+                        // 发送MQ消息，同时创建消费记录信息
+                        Result<String> result = logServerFeignClient.createRecord(consumerRecordRequest);
+                        if (Result.isNotSuccess(result)) {
+                            log.error("createConsumerRecord error：{}", JSON.toJSONString(result));
+                        }
+                    } catch (Exception e) {
+                        log.error(e.getMessage(), e);
+                    }
                 });
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
