@@ -1,21 +1,18 @@
 package com.doudoudrive.manager.impl;
 
+import com.doudoudrive.client.LogServerFeignClient;
 import com.doudoudrive.constant.NumberConstant;
 import com.doudoudrive.constant.RedisDelayedQueueEnum;
-import com.doudoudrive.model.DelayQueueMsg;
-import com.doudoudrive.util.lang.CompressionUtil;
-import com.doudoudrive.util.lang.ProtostuffUtil;
+import com.doudoudrive.model.CreateMqConsumerRecordRequestDTO;
 import com.doudoudrive.util.lang.RedisTemplateClient;
 import com.doudoudrive.util.thread.ExecutorBuilder;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import java.io.Closeable;
-import java.util.Base64;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -34,11 +31,7 @@ import java.util.concurrent.TimeUnit;
 public class DelayedQueueTransferManager implements CommandLineRunner, Closeable {
 
     private RedisTemplateClient redisTemplateClient;
-
-    /**
-     * RocketMQ消息模型
-     */
-    private RocketMQTemplate rocketmqTemplate;
+    private LogServerFeignClient logServerFeignClient;
 
     @Autowired
     public void setRedisTemplateClient(RedisTemplateClient redisTemplateClient) {
@@ -46,24 +39,14 @@ public class DelayedQueueTransferManager implements CommandLineRunner, Closeable
     }
 
     @Autowired
-    public void setRocketmqTemplate(RocketMQTemplate rocketmqTemplate) {
-        this.rocketmqTemplate = rocketmqTemplate;
+    public void setLogServerFeignClient(LogServerFeignClient logServerFeignClient) {
+        this.logServerFeignClient = logServerFeignClient;
     }
 
     /**
      * 线程池，用于异步拉取到期的队列元素
      */
     private static ExecutorService executor;
-
-    /**
-     * 序列化工具
-     */
-    private static final ProtostuffUtil<DelayQueueMsg> SERIALIZER = new ProtostuffUtil<>();
-
-    /**
-     * Base64解码器
-     */
-    private static final Base64.Decoder DECODER = Base64.getDecoder();
 
     @Override
     public void run(String... args) {
@@ -116,14 +99,11 @@ public class DelayedQueueTransferManager implements CommandLineRunner, Closeable
             try {
                 // 从延迟队列中拉取到期元素
                 Optional.ofNullable((String) redisTemplateClient.leftPop(delayedQueue.getTopic(), NumberConstant.INTEGER_ZERO, TimeUnit.SECONDS)).ifPresent(element -> {
-                    // 原始消息体
-                    byte[] body = DECODER.decode(element);
-                    // 字节解压缩为字节数组
-                    byte[] bytes = CompressionUtil.decompressBytes(body);
-                    // 反序列化为延迟队列的消息体
-                    Optional.ofNullable(SERIALIZER.deserialize(bytes, DelayQueueMsg.class))
-                            // 发送到RocketMQ
-                            .ifPresent(delayQueueMsg -> rocketmqTemplate.syncSend(delayedQueue.getMqTopic(), delayQueueMsg.getBody()));
+                    CreateMqConsumerRecordRequestDTO consumerRecordRequest = CreateMqConsumerRecordRequestDTO.builder()
+                            .delayedQueue(delayedQueue.name())
+                            .element(element)
+                            .build();
+                    logServerFeignClient.createRecord(consumerRecordRequest);
                 });
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
